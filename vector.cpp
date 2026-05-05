@@ -6,6 +6,8 @@
 using namespace std;
 
 // Defining demo
+
+
 void DemoVector()
 {
     // Defining with a special type in template
