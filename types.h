@@ -10,4 +10,6 @@ using TI = int;
 using TD = double;
 using TS = string;
 
+using Ref = long;
+
 #endif

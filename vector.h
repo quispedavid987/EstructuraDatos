@@ -8,6 +8,41 @@
 using namespace std;
 
 // Defining class as a template
+template <typename Container>
+class vector_foward_iterator{
+    using Node     = typename Container::Node;
+    using Iterator = vector_foward_iterator<Container>;
+
+    Container *m_pContainer = nullptr;
+    Node      *m_pNode      = nullptr;
+
+public:
+    vector_foward_iterator(Container *pContainer, Node *pNode):
+    m_pContainer(pContainer), m_pNode(pNode) {}
+
+    bool operator!=(const Iterator& other) const {return m_pNode != other.m_pNode;}
+    Node& operator*() const {return *m_pNode;}
+    Node* operator->() const { return m_pNode;}
+
+    Iterator& operator++() {++m_pNode; return *this;}
+};
+
+template <typename T>
+struct  VectorNode{
+    T   m_data;
+    Ref m_ref;
+    VectorNode() : m_data(T()), m_ref(Ref()){}
+    string ToString(){
+        ostringstream oss;
+        oss << "(" << m_data << "," << m_ref << ")";
+        return oss.str();
+    }
+    T   GetData() const { return m_data;}
+    Ref GetRef() const { return m_ref;}
+};
+
+
+
 template <typename T>
 class Vector
 {
