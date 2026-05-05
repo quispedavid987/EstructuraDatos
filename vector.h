@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <cstddef>
+#include <sstream>
 #include "types.h"
 #include <string>
 using namespace std;
@@ -11,7 +12,7 @@ template <typename T>
 class Vector
 {
 private:
-    T *m_data;
+    T       *m_data;
     // WARNING: size_t is predefined in cstddef
     size_t  m_size;
     size_t  m_capacity;
@@ -19,15 +20,15 @@ private:
 private:
     void resize();
 public:
-    // Constructor tih initial parameter
+    // Constructor with initial parameters
     Vector(size_t capacity = 10);
     virtual ~Vector(); // Destructor
 
     // Metodos
-    void push_back(T value);
-    T get(size_t index);
-    size_t size();
-    string ToString();
+    void push_back(T value); //Insert element at the tail
+    T get(size_t index);     //Get an element by index
+    size_t size();           //Get the size of the vector
+    string ToString();       //Print the vector class
 
 };
 
@@ -48,8 +49,7 @@ Vector<T>::~Vector()
 }
 
 template <typename T>
-void Vector<T>::push_back(T value)
-{
+void Vector<T>::push_back(T value){
     if (m_size == m_capacity)
         resize();
 
@@ -67,7 +67,7 @@ void Vector<T>::resize()
     T *newData = new T[m_capacity];
     // Copy every each element of old vector
     // to new vector
-    for (int i = 0; i < m_size; i++)
+    for (size_t i = 0; i < m_size; i++)
         newData[i] = m_data[i];
     // Delete old vector
     delete[] m_data;
@@ -86,13 +86,19 @@ size_t Vector<T>::size() {return m_size;}
 template <typename T>
 string Vector<T>::ToString()
 {
-    string result = "[";
+    ostringstream oss;
+    oss << "[";
     for(size_t i=0; i < m_size-1; i++)
-        result += to_string(m_data[i]) + ",";
+        oss << m_data[i] << ",";
     if (m_size > 0)
-        result += to_string(m_data[m_size - 1]);
-    result += "]";
-    return result;
+        oss << m_data[m_size - 1];
+    oss << "]";
+    return oss.str();
+}
+
+template <typename T>
+ostream& operator<<(ostream& os, Vector<T>& v){
+    return os << v.ToString();
 }
 
 
