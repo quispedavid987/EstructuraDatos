@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <sstream>
-#include <string>
+#include <mutex>
 
 #include "types.h"
 #include "foreach.h"
@@ -67,6 +67,7 @@ private:
     // WARNING: size_t is predefined in cstddef
     size_t  m_size;
     size_t  m_capacity;
+    mutex m_mtx; // Mutex para operaraciones concurrentes
 
 private:
     void resize();
@@ -96,6 +97,16 @@ public:
     void ReverseForEach(Func func, Args &&... args){
         ::ForEach(rbegin(), rend(), func, forward<Args>(args)...);
     }
+
+    template <typename Func, typename... Args>
+    forward_iterator FirstThat(Func func, Args &&... args){
+        return ::FirstThat(begin(), end(), func, forward<Args>(args)...);
+    }
+
+    template <typename Func, typename... Args>
+    backward_iterator ReverseFirstThat(Func func, Args &&... args){
+        return ::FirstThat(rbegin(), rend(), func, forward<Args>(args)...);
+    }
 };
 
 // Defining constructor as template
@@ -118,6 +129,7 @@ template <typename T>
 void Vector<T>::push_back(T value, Ref ref){
     if (m_size == m_capacity)
         resize();
+    scoped_lock<mutex> lock(m_mtx); // Thread seguro, concurrencia controlada
     m_data[m_size] = Node(value, ref);
     m_size++;
 }
@@ -125,6 +137,7 @@ void Vector<T>::push_back(T value, Ref ref){
 template <typename T>
 void Vector<T>::resize()
 {
+    scoped_lock<mutex> lock(m_mtx); // Thread seguro, concurrencia controlada
     // New capacity based on old capacity
     m_capacity = m_capacity < 10 ? 10 : m_capacity * 2;
     // New block of memory called newData
@@ -154,6 +167,7 @@ size_t Vector<T>::size() {return m_size;}
 template <typename T>
 string Vector<T>::ToString()
 {
+    scoped_lock<mutex> lock(m_mtx); // Thread seguro, concurrencia controlada
     ostringstream oss;
     oss << "[";
     for(size_t i=0; i < m_size-1; i++)

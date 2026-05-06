@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <mutex>
 
 #include "vector.h"
 
@@ -20,6 +21,16 @@ void AddOne(VectorNode<T> &node){
 template <typename T>
 void AddX(VectorNode<T> &node, T x){
     node += x;
+}
+
+template <typename T>
+bool IsGreaterThan(VectorNode<T> &node, T x){
+    return node.GetDataRef() > x;
+}
+
+template <typename T>
+bool IsMultipleOf(VectorNode<T> &node, T x){
+    return node.GetDataRef() % x == 0;
 }
 
 // Defining demo
@@ -47,6 +58,11 @@ void DemoVector()
     cout << endl;
     cout << "======================" << endl;
 
+    cout << "==== Imprimiendo con ReverseForEach" << endl;
+    v1.ReverseForEach(Print<TI>, cout);
+    cout << endl;
+    cout << "======================" << endl;
+
     cout << "==== Agregando AddOne" << endl;
     v1.ForEach(AddOne<TI>);
     v1.ForEach(Print<TI>, cout);
@@ -66,7 +82,34 @@ void DemoVector()
 
     cout << v1.get(0) << endl;
     cout << "======================" << endl;
-    
+
+    cout << "==== FirstThat > 60" << endl;
+    auto it = v1.FirstThat(IsGreaterThan<TI>, 60);
+    if (it != v1.end())
+        cout << "Primer elemento mayor que 60: " << *it << endl;
+    else
+        cout << "No encontramos elementos mayores que 60" << endl;
+
+    cout << "======================" << endl;
+    cout << "==== FirstThat multiple of 4" << endl;
+    auto it2 = v1.FirstThat(IsMultipleOf<TI>, 4);
+    if (it2 != v1.end()){
+        cout << "Primer elemento múltiplo de 4: " << *it2 << endl;
+    }
+    else{
+        cout << "No encontramos elementos múltiplos de 4" << endl;
+    }
+    cout << "======================" << endl;
+
+    cout << "==== ReverseFirstThat > 10" << endl;
+    auto it3 = v1.ReverseFirstThat(IsGreaterThan<TI>, 10);
+    if (it3 != v1.rend()){
+        cout << "Primer elemento mayor que 10 (reverse): " << *it3 << endl;
+    }
+    else{
+        cout << "No encontramos elementos mayores que 10 (reverse)" << endl;
+    }
+    cout << "======================" << endl;
 
 /*
     // Printing values
