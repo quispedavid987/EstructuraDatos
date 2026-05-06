@@ -3,8 +3,11 @@
 
 #include <cstddef>
 #include <sstream>
-#include "types.h"
 #include <string>
+
+#include "types.h"
+#include "foreach.h"
+
 using namespace std;
 
 // Defining class as a template
@@ -18,7 +21,7 @@ class vector_foward_iterator{
 
 public:
     vector_foward_iterator(Container *pContainer, Node *pNode):
-    m_pContainer(pContainer), m_pNode(pNode) {}
+    m_pContainer(pContainer), m_pNode(pNode) {} 
 
     bool operator!=(const Iterator& other) const {return m_pNode != other.m_pNode;}
     Node& operator*() const {return *m_pNode;}
@@ -32,6 +35,7 @@ struct  VectorNode{
     T   m_data;
     Ref m_ref;
     VectorNode() : m_data(T()), m_ref(Ref()){}
+    VectorNode(T data, Ref ref) : m_data(data), m_ref(ref) {}
     string ToString(){
         ostringstream oss;
         oss << "(" << m_data << "," << m_ref << ")";
@@ -39,15 +43,24 @@ struct  VectorNode{
     }
     T   GetData() const { return m_data;}
     Ref GetRef() const { return m_ref;}
+    void operator++() {++m_data;}
+    void operator+=(const T& other) {m_data += other;}
 };
 
-
+template <typename T>
+ostream& operator<<(ostream& os, VectorNode<T>& vn){
+    return os << vn.ToString();
+}
 
 template <typename T>
 class Vector
 {
+public:
+    using Node             = VectorNode<T>;
+    using forward_iterator = vector_foward_iterator<Vector<T>>;
+
 private:
-    T       *m_data;
+    Node   *m_data;
     // WARNING: size_t is predefined in cstddef
     size_t  m_size;
     size_t  m_capacity;
@@ -60,10 +73,18 @@ public:
     virtual ~Vector(); // Destructor
 
     // Metodos
-    void push_back(T value); //Insert element at the tail
+    void push_back(T value, Ref ref); //Insert element at the tail
     T get(size_t index);     //Get an element by index
     size_t size();           //Get the size of the vector
     string ToString();       //Print the vector class
+
+    forward_iterator begin() {return forward_iterator(this, m_data);}
+    forward_iterator end() {return forward_iterator(this, m_data + m_size);}
+
+    template <typename Func,typename... Args>
+    void ForEach(Func func, Args &&... args){
+        ::ForEach(begin(), end(), func, forward<Args>(args)...);
+    }
 
 };
 
@@ -74,7 +95,7 @@ Vector<T>::Vector(size_t capacity)
     m_data     = nullptr;
     m_size     = 0;
     m_capacity = capacity;
-    m_data     = new T[m_capacity]; // Asigning memory
+    m_data     = new Node[m_capacity]; // Asigning memory
 }
 
 template <typename T>
@@ -84,11 +105,10 @@ Vector<T>::~Vector()
 }
 
 template <typename T>
-void Vector<T>::push_back(T value){
+void Vector<T>::push_back(T value, Ref ref){
     if (m_size == m_capacity)
         resize();
-
-    m_data[m_size] = value;
+    m_data[m_size] = Node(value, ref);
     m_size++;
 }
 
@@ -99,7 +119,7 @@ void Vector<T>::resize()
     m_capacity = m_capacity < 10 ? 10 : m_capacity * 2;
     // New block of memory called newData
     // to storage the new vector
-    T *newData = new T[m_capacity];
+    Node *newData = new Node[m_capacity];
     // Copy every each element of old vector
     // to new vector
     for (size_t i = 0; i < m_size; i++)
@@ -113,7 +133,11 @@ void Vector<T>::resize()
 
 
 template <typename T>
-T Vector<T>::get(size_t index) {return m_data[index];}
+T Vector<T>::get(size_t index){
+    if(index >= m_size)
+        throw out_of_range("Index out of bounds");
+    return m_data[index].GetData();
+}
 
 template <typename T>
 size_t Vector<T>::size() {return m_size;}
