@@ -7,27 +7,27 @@
 
 #include "types.h"
 #include "foreach.h"
+#include "general_iterator.h"
 
 using namespace std;
 
 // Defining class as a template
 template <typename Container>
-class vector_foward_iterator{
-    using Node     = typename Container::Node;
-    using Iterator = vector_foward_iterator<Container>;
-
-    Container *m_pContainer = nullptr;
-    Node      *m_pNode      = nullptr;
-
+class vector_foward_iterator : public general_iterator<Container, vector_foward_iterator<Container>>{
 public:
-    vector_foward_iterator(Container *pContainer, Node *pNode):
-    m_pContainer(pContainer), m_pNode(pNode) {} 
+    using MySelf   = vector_foward_iterator<Container>;
+    using Parent   = general_iterator<Container, MySelf>;
+    using Parent::Parent;
+    MySelf operator++(){this->m_pNode++; return *this;}
+};
 
-    bool operator!=(const Iterator& other) const {return m_pNode != other.m_pNode;}
-    Node& operator*() const {return *m_pNode;}
-    Node* operator->() const { return m_pNode;}
-
-    Iterator& operator++() {++m_pNode; return *this;}
+template <typename Container>
+class vector_backward_iterator : public general_iterator<Container, vector_backward_iterator<Container>>{
+public:
+    using MySelf   = vector_backward_iterator<Container>;
+    using Parent   = general_iterator<Container, MySelf>;
+    using Parent::Parent;
+    MySelf operator++(){this->m_pNode--; return *this;}
 };
 
 template <typename T>
@@ -44,7 +44,7 @@ struct  VectorNode{
     T   GetData() const { return m_data;}
     Ref GetRef() const { return m_ref;}
     void operator++() {++m_data;}
-    void operator+=(const T& other) {m_data += other;}
+    void operator+=(const T& value) {m_data += value;}
 };
 
 template <typename T>
@@ -56,8 +56,10 @@ template <typename T>
 class Vector
 {
 public:
-    using Node             = VectorNode<T>;
-    using forward_iterator = vector_foward_iterator<Vector<T>>;
+    using Node              = VectorNode<T>;
+    using value_type        = T;
+    using forward_iterator  = vector_foward_iterator<Vector<T>>;
+    using backward_iterator = vector_backward_iterator<Vector<T>>;
 
 private:
     Node   *m_data;
@@ -80,12 +82,19 @@ public:
 
     forward_iterator begin() {return forward_iterator(this, m_data);}
     forward_iterator end() {return forward_iterator(this, m_data + m_size);}
+    backward_iterator rbegin() {return backward_iterator(this, m_data + m_size - 1);}
+    backward_iterator rend() {return backward_iterator(this, m_data - 1);}
+
 
     template <typename Func,typename... Args>
     void ForEach(Func func, Args &&... args){
         ::ForEach(begin(), end(), func, forward<Args>(args)...);
     }
 
+    template <typename Func,typename... Args>
+    void ReverseForEach(Func func, Args &&... args){
+        ::ForEach(rbegin(), rend(), func, forward<Args>(args)...);
+    }
 };
 
 // Defining constructor as template
@@ -130,7 +139,6 @@ void Vector<T>::resize()
     m_data = newData;
     
 }
-
 
 template <typename T>
 T Vector<T>::get(size_t index){

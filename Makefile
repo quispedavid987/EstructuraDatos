@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++2b -Wall -g -pthread
+CXXFLAGS = -std=c++2a -Wall -g -pthread
 LDFLAGS = -pthread
 
 TARGET = main

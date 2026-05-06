@@ -7,19 +7,19 @@ using namespace std;
 
 // Creating method for ForEach
 template <typename T>
-void Print(T &value, ostream& os){
+void Print(VectorNode<T> &value, ostream& os){
     os << value << ",";
 }
 
 template <typename T>
-void AddOne(T &value){
-    ++value.m_data;
+void AddOne(VectorNode<T> &node){
+    ++node;
 }
 
 
-template <typename T, typename U>
-void AddX(T &value, U x){
-    value += x;
+template <typename T>
+void AddX(VectorNode<T> &node, T x){
+    node += x;
 }
 
 // Defining demo
@@ -41,23 +41,27 @@ void DemoVector()
     }
     cout << "]" << endl;
     cout << "======================" << endl;
+
     cout << "==== Imprimiendo con ForEach" << endl;
-    v1.ForEach(Print<VectorNode<TI>>, cout);
+    v1.ForEach(Print<TI>, cout);
     cout << endl;
     cout << "======================" << endl;
+
     cout << "==== Agregando AddOne" << endl;
-    v1.ForEach(AddOne<VectorNode<TI>>);
-    v1.ForEach(Print<VectorNode<TI>>, cout);
+    v1.ForEach(AddOne<TI>);
+    v1.ForEach(Print<TI>, cout);
     cout << endl;
     cout << "======================" << endl;
-    cout << "==== Agregando AddX" << endl;
-    v1.ForEach(AddX<VectorNode<TI>, TI>, 2);
-    v1.ForEach(Print<VectorNode<TI>>, cout);
+    cout << "==== Agregando AddX (2)" << endl;
+    v1.ForEach(AddX<TI>, 2);
+    v1.ForEach(Print<TI>, cout);
     cout << endl;
+    cout << "======================" << endl;
+    cout << v1.get(0) << endl;
     cout << "======================" << endl;
     
 
-
+/*
     // Printing values
     //for(auto i = 0; i < v1.size(); ++i)
     //    cout << v1.get(i) << " ";
@@ -93,6 +97,6 @@ void DemoVector()
     cout << "=== Exportando en un outfilestream.txt" << endl;
     ofstream ofs("output.txt");
     ofs << v3;
-
+*/
 
 }
