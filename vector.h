@@ -42,6 +42,7 @@ struct  VectorNode{
         return oss.str();
     }
     T   GetData() const { return m_data;}
+    T&  GetDataRef() { return m_data;} 
     Ref GetRef() const { return m_ref;}
     void operator++() {++m_data;}
     void operator+=(const T& value) {m_data += value;}

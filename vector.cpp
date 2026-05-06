@@ -57,6 +57,13 @@ void DemoVector()
     v1.ForEach(Print<TI>, cout);
     cout << endl;
     cout << "======================" << endl;
+    cout << "==== Implementando Lambda" << endl;
+    int a = 3;
+    v1.ForEach([a](VectorNode<TI>& node){ node.GetDataRef() *= a;});
+    v1.ForEach(Print<TI>, cout);
+    cout << endl;
+    cout << "======================" << endl;
+
     cout << v1.get(0) << endl;
     cout << "======================" << endl;
     
