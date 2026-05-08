@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <utility>
 
+using namespace std;
+
 template <typename Container, class IteratorBase>
 class general_iterator{
 public:
@@ -18,10 +20,10 @@ public:
     general_iterator(Container *pContainer, Node *pNode):
     m_pContainer(pContainer), m_pNode(pNode) {}
 
-    general_iterator(MySelf& other):
+    general_iterator(MySelf &other):
     m_pContainer(other.m_pContainer), m_pNode(other.m_pNode) {}
 
-    general_iterator(MySelf&& other){
+    general_iterator(MySelf &&other){
         m_pContainer = move(other.m_pContainer);
         m_pNode      = move(other.m_pNode);
     }

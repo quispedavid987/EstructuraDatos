@@ -1,9 +1,9 @@
 CXX = g++
-CXXFLAGS = -std=c++2a -Wall -g -pthread
+CXXFLAGS = -std=c++2b -Wall -g -pthread
 LDFLAGS = -pthread
 
 TARGET = main
-SRCS = main.cpp vector.cpp
+SRCS = main.cpp ListsDemo.cpp#vector.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 # Primera regla (por defecto)
